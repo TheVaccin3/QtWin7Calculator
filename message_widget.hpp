@@ -22,18 +22,10 @@ class MessageWidget: public QWidget {
 
   public slots:
 	void info(const QString &message) {
-		m_messageLineEdit->deselect();
-		m_messageLineEdit->setPalette(pWhite);
 		m_messageLineEdit->setText(message);
-	}
-	void error(const QString &message) {
-		//m_messageLineEdit->setPalette(pRed);
-		m_messageLineEdit->setText(message);
-		m_messageLineEdit->selectAll();
 	}
 
   private:
-	QPalette pWhite;
 	QLineEdit *m_messageLineEdit;
 	QHBoxLayout *layout;
 };

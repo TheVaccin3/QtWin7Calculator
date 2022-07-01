@@ -1,9 +1,9 @@
 #pragma once
+#include "button_panel.hpp"
 #include "message_widget.hpp"
 #include "repl_widget.hpp"
 #include <QDebug>
 #include <QGridLayout>
-#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
 #include <QPushButton>
@@ -11,46 +11,39 @@
 #include <fstream>
 #include <string>
 using std::string;
-constexpr size_t WIDTH = 500;
-constexpr size_t HEIGHT = 350;
+constexpr int WIDTH = 500;
+constexpr int HEIGHT = 350;
 class MainWindow: public QWidget {
 	Q_OBJECT
   public:
 	MainWindow(QWidget *parent = nullptr) {
 		setFixedSize(HEIGHT, WIDTH);
-		menuBar = new QMenuBar;
 		view = new QMenu("View");
 		edit = new QMenu("Edit");
 		help = new QMenu("Help");
-
+		menuBar = new QMenuBar;
 		menuBar->addMenu(view);
 		menuBar->addMenu(edit);
 		menuBar->addMenu(help);
 		menuBar->setFixedHeight(30);
 
-		message_widget = new MessageWidget(this);
-		message_widget->setFixedHeight(HEIGHT - menuBar->height());
-
 		layout = new QGridLayout;
+		result_box = new QLineEdit(" ");
+		result_box->setFixedHeight(100);
+		buttonpanel = new ButtonPanel(this);
+		buttonpanel->setFixedHeight((HEIGHT - menuBar->height() - result_box->height()));
+
 		layout->addWidget(menuBar, 0, 0, 1, 6);
-		layout->addWidget(message_widget, 1, 0, 1, 6);
+		layout->addWidget(result_box, 1, 0, 1, 6);
+		layout->addWidget(buttonpanel, 2, 0, 1, 6);
 		setStyleSheet("background-color: #d6e3f2;");
-
-		for (int i = 0; i < 30; i++) {
-			buttons[i] = new QPushButton;
-			buttons[i]->setText(setButtonText(i));
-			buttons[i]->setStyleSheet("background-color: #ecf7f7;");
-			layout->addWidget(buttons[i], i / 5 + 2, i % 5);
-			//connect(button, &QPushButton::clicked, this, &MainWindow::button_clicked);
-		}
-
 		setLayout(layout);
-		//layout = new QVBoxLayout(this);
-		//repl_widget = new REPLWidget(this);
-		//message_widget = new MessageWidget(this);
-		//layout->addWidget(message_widget);
-		//layout->addWidget(repl_widget);
-		//this->setLayout(layout);
+
+		result_box->setReadOnly(true);
+		result_box->setStyleSheet("background-color: #FFFFFF;");
+		result_box->setAlignment(Qt::AlignRight);
+		//increase the font size of the result box
+		result_box->setFont(QFont("Arial", 20));
 		//QObject::connect(interpreter, SIGNAL(drawGraphic(QGraphicsItem *)), canvas_widget, SLOT(addGraphic(QGraphicsItem *)));
 	}
 	static QString setButtonText(int i) {
@@ -152,6 +145,12 @@ class MainWindow: public QWidget {
 
 	/*signals:
 	void message(QString message);*/
+  public slots:
+	void on_button_clicked(int i) {
+		if (i >= 9 && i <= 26) {
+			result_box->setText(result_box->text() + ButtonPanel::setButtonText(i));
+		}
+	}
 
   private:
 	QGridLayout *layout;
@@ -159,6 +158,8 @@ class MainWindow: public QWidget {
 	QMenu *view;
 	QMenu *edit;
 	QMenu *help;
-	QPushButton *buttons[30];
-	MessageWidget *message_widget;
+	ButtonPanel *buttonpanel;
+	QLineEdit *result_box;
+	double memory = 0;
+	//MessageWidget *message_widget;
 };

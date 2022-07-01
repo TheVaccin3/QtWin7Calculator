@@ -15,6 +15,7 @@ set(gui_src
   message_widget.hpp
   repl_widget.hpp
   main_window.hpp
+  button_panel.hpp
   )
 
 
